@@ -3,10 +3,10 @@
 		<h1>Minha lista de tarefas</h1>
     <button @click="handleShowHideList()">Ver lista</button>
     <br>
-    <input type="text" v-focus v-model="state.currentTask" @keyup.enter="addTask()">
+    <input type="text" v-focus v-model="currentTask" @keyup.enter="addTask()">
 
-    <ul v-if="state.showList">
-      <li v-for="(task, index) in state.tasks" 
+    <ul v-if="showList">
+      <li v-for="(task, index) in tasks" 
           :key="`${task}-${index}`" 
           @dblclick="complete(task)"
           class="task-item" 
@@ -30,46 +30,34 @@
     directives: {
       focus
     },
-    setup() {
-      const state = reactive({
-        currentTask: '',
-        showList: false,
-        tasks: [
-          { name: 'Fazer o curso', isDone: false }
-        ]
-      })
-    
-      function handleShowHideList() {
-        state.showList = !state.showList
-      }
-
-      function addTask() {
-        state.tasks.push({
-          name: state.currentTask,
+    data: () => ({
+      currentTask: '',
+      showList: false,
+      tasks: [
+        { name: 'Fazer o curso', isDone: false }
+      ]
+    }),
+    methods: {
+      addTask() {
+        this.tasks.push({
+          name: this.currentTask,
           isDOne: false
         })
-        state.currentTask = ''
-      }
-
-      function complete(task) {
-        state.tasks  = state.tasks.map(t => {
+        this.currentTask = ''
+      },
+      handleShowHideList() {
+        this.showList = !this.showList
+      },
+      complete(task) {
+        this.tasks  = this.tasks.map(t => {
           if (t.name === task.name) {
             return {...t, isDone: !t.isDone }
           }
           return { ...t }
         })
-      }
-
-      function remove(task) {
-        state.tasks = state.tasks.filter(t => t.name != task.name)
-      }
-
-      return {
-        state,
-        handleShowHideList,
-        addTask,
-        complete,
-        remove,
+      },
+      remove(task) {
+        this.tasks = this.tasks.filter(t => t.name != task.name)
       }
     }
   }
